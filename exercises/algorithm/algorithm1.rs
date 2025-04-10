@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -29,13 +28,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: PartialOrd + Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: PartialOrd + Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -69,16 +68,52 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+	
+    pub fn merge(mut list_a: LinkedList<T>, mut list_b: LinkedList<T>) -> Self {
+        let mut merged = LinkedList::<T>::new();
+
+        // Pointers to current nodes
+        let mut a = list_a.start;
+        let mut b = list_b.start;
+
+        // 遍历两个链表
+        while let (Some(ap), Some(bp)) = (a, b) {
+            // 这里的 ap 和 bp 是 NonNull<Node<T>>
+            unsafe {
+                let a_ref = ap.as_ref();
+                let b_ref = bp.as_ref();
+
+                if a_ref.val < b_ref.val {
+                    merged.add(a_ref.val.clone());
+                    a = a_ref.next;
+                } else {
+                    merged.add(b_ref.val.clone());
+                    b = b_ref.next;
+                }
+            }
         }
-	}
+
+        // 剩下的 append 完
+        while let Some(ap) = a {
+            unsafe {
+                let a_ref = ap.as_ref();
+                merged.add(a_ref.val.clone());
+                a = a_ref.next;
+            }
+        }
+
+        while let Some(bp) = b {
+            unsafe {
+                let b_ref = bp.as_ref();
+                merged.add(b_ref.val.clone());
+                b = b_ref.next;
+            }
+        }
+
+        merged
+    }
 }
+
 
 impl<T> Display for LinkedList<T>
 where

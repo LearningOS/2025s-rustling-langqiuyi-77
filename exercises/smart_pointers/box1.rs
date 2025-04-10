@@ -18,11 +18,13 @@
 //
 // Execute `rustlings hint box1` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
+use crate::List::Cons;
 
 #[derive(PartialEq, Debug)]
 pub enum List {
-    Cons(i32, List),
+    // Cons 是链表的一种
+    // Box 将相当于是智能指针，指向堆空间的地址
+    Cons(i32, Box<List>),
     Nil,
 }
 
@@ -35,11 +37,11 @@ fn main() {
 }
 
 pub fn create_empty_list() -> List {
-    todo!()
+    List::Nil
 }
 
 pub fn create_non_empty_list() -> List {
-    todo!()
+    Cons(1, Box::new(List::Nil))
 }
 
 #[cfg(test)]
